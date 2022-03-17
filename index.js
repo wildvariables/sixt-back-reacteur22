@@ -22,7 +22,7 @@ const Booking = mongoose.model("Booking", {
     client_firstname: String,
     client_lastname: String,
     client_email: String,
-    client_phonenumber: Number,
+    client_phonenumber: String,
     client_birthday: String,
     client_adress: {
       client_street: String,
@@ -32,15 +32,17 @@ const Booking = mongoose.model("Booking", {
     },
   },
   booking_info: {
-    booking_number: Number,
+    booking_id: String,
     booking_date: String,
+    booking_year: Number,
+    booking_month: Number,
     booking_start: String,
     booking_return: String,
     booking_duration: Number,
     agency_id: String,
     agency_name: String,
     car_id: String,
-    car_shirt_name: String,
+    car_short_name: String,
     car_long_name: String,
     car_picture: String,
     car_driver_min_age: Number,
@@ -88,7 +90,11 @@ app.get("/rentaloffers", async (req, res) => {
       res.status(409).json({ message: "At least one info is missing" });
     }
   } catch (error) {
-    res.status(400).json(error.message);
+    if (error.response.data.error.includes("zombies")) {
+      res.status(400).json({ message: "no result" });
+    } else {
+      res.status(400).json(error.response.data);
+    }
   }
 });
 
@@ -114,6 +120,28 @@ app.get("/cardetails", async (req, res) => {
 // Create
 app.post("/booking/create", async (req, res) => {
   try {
+    let bookingId = "";
+    bookingId += req.fields.lastname.slice(0, 3).toUpperCase();
+    const bookingDate = new Date();
+    const year = bookingDate.getFullYear();
+    const month = bookingDate.getMonth() + 1;
+    console.log(month);
+    bookingId += year.toString().slice(-2);
+    if (month < 10) {
+      bookingId += "0" + month.toString();
+    } else {
+      bookingId += month.toString();
+    }
+    console.log(bookingId);
+
+    const checkBookings = await Booking.find({
+      booking_year: year,
+      booking_month: month,
+    });
+    console.log(checkBookings.length);
+    bookingId += checkBookings.length + 1;
+    console.log(bookingId);
+
     const newBooking = new Booking({
       client_info: {
         client_civility: req.fields.civility,
@@ -131,15 +159,17 @@ app.post("/booking/create", async (req, res) => {
         },
       },
       booking_info: {
-        booking_number: req.fields.booking_number,
-        booking_date: req.fields.booking_date,
+        booking_id: bookingId,
+        booking_date: bookingDate,
+        booking_year: year,
+        booking_month: month,
         booking_start: req.fields.booking_start,
         booking_return: req.fields.booking_return,
         booking_duration: req.fields.booking_duration,
         agency_id: req.fields.agency_id,
         agency_name: req.fields.agency_name,
         car_id: req.fields.car_id,
-        car_shirt_name: req.fields.car_short_name,
+        car_short_name: req.fields.car_short_name,
         car_long_name: req.fields.car_long_name,
         car_picture: req.fields.car_picture,
         car_driver_min_age: req.fields.driver_min_age,
@@ -154,18 +184,39 @@ app.post("/booking/create", async (req, res) => {
       },
     });
     await newBooking.save();
-    console.log(newBooking);
-    res.json({ message: "It worked !" });
+    // console.log(newBooking);
+    res.json({ bookingId: newBooking.booking_info.booking_id });
   } catch (error) {
     res.status(400).json(error.message);
   }
 });
 
 // Read
+app.get("/booking/read", async (req, res) => {
+  try {
+    const bookingList = await Booking.find();
+    res.json(bookingList);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+});
 
 // Update
 
 // Delete
+
+// Backoffice : check password
+app.get("/backoffice", (req, res) => {
+  try {
+    if (req.query.input === "HelloWorld!") {
+      res.json({ message: "password correct" });
+    } else {
+      res.json({ message: "password incorrect" });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+});
 
 // Rajouter All routes
 
