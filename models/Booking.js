@@ -37,6 +37,7 @@ const Booking = mongoose.model("Booking", {
     car_price_details: {
       car_day_price: Number,
       car_location_price: Number,
+      car_location_price_by_day: Number,
       car_included_charges: Array,
       car_extra_fees: Array,
       car_selected_additional_charges: Array,

@@ -75,6 +75,7 @@ router.post("/booking/create", async (req, res) => {
         car_price_details: {
           car_day_price: req.fields.day_price,
           car_location_price: req.fields.location_price,
+          car_location_price_by_day: req.fields.location_price_by_day,
           car_included_charges: req.fields.included_charges,
           car_extra_fees: req.fields.extra_fees,
           car_selected_additional_charges: req.fields.additional_charges,
