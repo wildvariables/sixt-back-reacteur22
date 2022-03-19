@@ -7,7 +7,7 @@ const Booking = require("../models/Booking");
 // Create: Create a new booking
 router.post("/booking/create", async (req, res) => {
   try {
-    // Booking ID build (with a search in the database to calcul the last two numbers)
+    // Booking ID build (with a search in the database to calcul the last three numbers)
     let bookingId = "";
     bookingId += req.fields.lastname.slice(0, 3).toUpperCase();
     const bookingDate = new Date();
@@ -23,6 +23,7 @@ router.post("/booking/create", async (req, res) => {
       booking_year: year,
       booking_month: month,
     });
+
     if (checkBookings.length > 0) {
       const lastBookingId = Number(
         checkBookings[checkBookings.length - 1].booking_info.booking_id.slice(
@@ -30,6 +31,8 @@ router.post("/booking/create", async (req, res) => {
         )
       );
       if (lastBookingId < 9) {
+        bookingId += "00" + (lastBookingId + 1);
+      } else if (lastBookingId < 99) {
         bookingId += "0" + (lastBookingId + 1);
       } else {
         bookingId += lastBookingId + 1;

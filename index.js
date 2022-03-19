@@ -2,7 +2,6 @@
 const express = require("express");
 const formidable = require("express-formidable");
 const cors = require("cors");
-const { default: axios } = require("axios");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
