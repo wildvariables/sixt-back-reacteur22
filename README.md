@@ -1,4 +1,4 @@
-# SIXT | Backend
+# SIXT 🏎️ | Backend
 
 Academic work, as part of the certification from @LeReacteur - March 2022
 

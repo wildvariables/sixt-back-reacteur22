@@ -27,7 +27,7 @@ router.post("/booking/create", async (req, res) => {
     if (checkBookings.length > 0) {
       const lastBookingId = Number(
         checkBookings[checkBookings.length - 1].booking_info.booking_id.slice(
-          -2
+          -3
         )
       );
       if (lastBookingId < 9) {
@@ -38,7 +38,7 @@ router.post("/booking/create", async (req, res) => {
         bookingId += lastBookingId + 1;
       }
     } else {
-      bookingId += "01";
+      bookingId += "001";
     }
     // Creation of a new booking according to the model (mandatory inputs are managed in the frontend)
     const newBooking = new Booking({
