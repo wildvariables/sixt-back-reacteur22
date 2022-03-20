@@ -101,7 +101,35 @@ router.get("/booking/read", async (req, res) => {
   }
 });
 
-// Update
+// Update : Changing contact details
+router.put("/booking/modify", async (req, res) => {
+  try {
+    if (req.fields.id) {
+      if (req.fields.newEmail || req.fields.newPhonenumber) {
+        const updatedBooking = await Booking.findById(req.fields.id);
+        if (req.fields.newEmail) {
+          updatedBooking.client_info.client_email = req.fields.newEmail;
+        }
+        if (req.fields.newPhonenumber) {
+          updatedBooking.client_info.client_phonenumber =
+            req.fields.newPhonenumber;
+        }
+        await updatedBooking.save();
+        res.json({
+          message: "Update completed",
+          email: updatedBooking.client_info.client_email,
+          phonenumber: updatedBooking.client_info.client_phonenumber,
+        });
+      } else {
+        res.json({ message: "Please, enter a new email and/or phone number" });
+      }
+    } else {
+      res.json({ message: "Please, enter an ID" });
+    }
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+});
 
 // Delete : Delete one booking according to its ID
 router.get("/booking/delete", async (req, res) => {
